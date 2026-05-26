@@ -1,0 +1,4 @@
+"/c/Program Files/Eclipse Adoptium/jdk-17.0.19.10-hotspot/bin/javac" -encoding UTF-8 -d bin src/model/*.java src/dao/*.java src/service/*.java src/controller/*.java src/view/*.java
+
+
+"/c/Program Files/Eclipse Adoptium/jdk-17.0.19.10-hotspot/bin/java" -cp bin view.MainView
