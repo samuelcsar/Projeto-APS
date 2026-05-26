@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Santini Gourmet - Gestão Operacional</title>
+    <!-- Ícones e Fontes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="frontend/css/style.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <h1>SANTINI GOURMET</h1>
+            <span>Gestão Operacional</span>
+        </div>
+        <div class="header-status">
+            <div class="status-indicator">
+                <span class="dot livre"></span>
+                <span>Livre</span>
+            </div>
+            <div class="status-indicator">
+                <span class="dot ocupada"></span>
+                <span>Ocupada</span>
+            </div>
+            <div class="status-indicator">
+                <span class="dot limpeza"></span>
+                <span>Aguardando Higienização</span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="dashboard-grid">
+            
+            <!-- Painel Esquerdo: Mapa de Mesas do Salão -->
+            <section class="sidebar">
+                <h2>Mapa do Salão</h2>
+                <div class="mesas-container" id="mesas-grid">
+                    <!-- Mesas geradas dinamicamente via JS -->
+                </div>
+            </section>
+
+            <!-- Painel Direito: Abas de Terminais (Atores) -->
+            <section class="tabs-container">
+                <nav class="tabs-nav">
+                    <button class="tab-btn active" data-tab="garcom">
+                        <i class="fa-solid fa-bell-concierge"></i> Garçom
+                    </button>
+                    <button class="tab-btn" data-tab="cozinha">
+                        <i class="fa-solid fa-fire-burner"></i> Cozinha (KDS)
+                    </button>
+                    <button class="tab-btn" data-tab="caixa">
+                        <i class="fa-solid fa-cash-register"></i> Caixa
+                    </button>
+                    <button class="tab-btn" data-tab="limpeza">
+                        <i class="fa-solid fa-broom"></i> Limpeza
+                    </button>
+                </nav>
+
+                <!-- Aba 1: Garçom -->
+                <div class="tab-content active" id="tab-garcom">
+                    <div class="tab-header">
+                        <h2>Terminal do Garçom</h2>
+                        <span class="mesa-selecionada-info" id="garcom-mesa-info">Nenhuma mesa selecionada</span>
+                    </div>
+                    
+                    <div class="garcom-container">
+                        <!-- Seleção do Cardápio -->
+                        <div>
+                            <h3 style="margin-bottom: 1rem; font-size: 1.1rem; color: var(--color-primary);">Selecione os Itens do Cardápio</h3>
+                            <div class="cardapio-grid" id="cardapio-items">
+                                <!-- Itens de cardápio gerados via JS -->
+                            </div>
+                        </div>
+
+                        <!-- Detalhes do Novo Pedido -->
+                        <div class="resumo-pedido">
+                            <div>
+                                <h3 style="margin-bottom: 0.8rem; font-size: 1rem; color: #fff;">Comanda Digital</h3>
+                                <ul class="itens-adicionados" id="itens-pedido-lista">
+                                    <!-- Itens adicionados aparecerão aqui -->
+                                </ul>
+                                
+                                <label for="restricoes-campo" style="font-size: 0.8rem; color: var(--color-text-muted);">Restrições Alimentares do Cliente:</label>
+                                <textarea class="restricoes-input" id="restricoes-campo" rows="3" placeholder="Ex: Intolerante a lactose, sem glúten..."></textarea>
+                            </div>
+                            
+                            <div>
+                                <div class="btn-total">
+                                    <span>Total:</span>
+                                    <span id="valor-total-pedido">R$ 0,00</span>
+                                </div>
+                                <button class="btn-primary" id="btn-enviar-pedido" disabled>Enviar à Cozinha</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aba 2: Cozinha (KDS) -->
+                <div class="tab-content" id="tab-cozinha">
+                    <div class="tab-header">
+                        <h2>Kitchen Display System (KDS)</h2>
+                        <span style="font-size: 0.85rem; color: var(--color-text-muted);"><i class="fa-solid fa-clock"></i> SLA em Tempo Real</span>
+                    </div>
+                    <div class="kds-container" id="kds-fila">
+                        <!-- Pedidos pendentes gerados via JS -->
+                    </div>
+                </div>
+
+                <!-- Aba 3: Caixa -->
+                <div class="tab-content" id="tab-caixa">
+                    <div class="tab-header">
+                        <h2>Terminal do Caixa</h2>
+                        <span class="mesa-selecionada-info" id="caixa-mesa-info">Nenhuma mesa selecionada</span>
+                    </div>
+
+                    <div class="caixa-container">
+                        <!-- Detalhamento da Conta -->
+                        <div class="conta-detalhe">
+                            <h3 style="color: #fff; font-size: 1.1rem;">Resumo de Consumo</h3>
+                            <table id="tabela-consumo">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th style="text-align: right;">Preço</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabela-consumo-corpo">
+                                    <!-- Preenchido via JS -->
+                                </tbody>
+                            </table>
+                            <div style="display: flex; justify-content: space-between; font-weight: 700; margin-top: 1.5rem; font-size: 1.2rem; border-top: 1px dashed var(--border-color); padding-top: 1rem;">
+                                <span>Total Consumido:</span>
+                                <span id="caixa-total-valor">R$ 0,00</span>
+                            </div>
+                        </div>
+
+                        <!-- Fechamento / Divisão de Contas -->
+                        <div class="caixa-fechamento">
+                            <h3 style="color: #fff; font-size: 1.1rem; margin-bottom: 1rem;">Finalizar Atendimento</h3>
+                            
+                            <div class="split-box">
+                                <label for="split-pessoas">Dividir Conta (Número de Pessoas):</label>
+                                <input type="number" class="split-input" id="split-pessoas" min="1" value="1">
+                                <div class="split-resultado">
+                                    Valor Individual: <span id="split-individual-valor">R$ 0,00</span>
+                                </div>
+                            </div>
+
+                            <button class="btn-primary" id="btn-gerar-pagamento" disabled>Gerar Pagamento PIX</button>
+                            
+                            <div id="caixa-pagamento-area" style="display: none; text-align: center; margin-top: 1.5rem;">
+                                <div class="qr-code-container">
+                                    <!-- QR Code simulado -->
+                                    <i class="fa-solid fa-qrcode" style="font-size: 8rem; color: #000;"></i>
+                                </div>
+                                <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 1rem;">Escaneie o QR Code para pagar via Pix</p>
+                                <button class="btn-accent" id="btn-confirmar-pagamento">Confirmar Pagamento</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aba 4: Limpeza -->
+                <div class="tab-content" id="tab-limpeza">
+                    <div class="tab-header">
+                        <h2>Equipe de Limpeza e Higienização</h2>
+                    </div>
+                    
+                    <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 2rem;">
+                        <h3 style="color: #fff; margin-bottom: 1rem; font-size: 1.1rem;">Fila de Mesas Aguardando Limpeza</h3>
+                        <p style="font-size: 0.9rem; color: var(--color-text-muted); margin-bottom: 1.5rem;">
+                            As mesas abaixo foram desocupadas no caixa e estão interditadas. Realize a higienização física e confirme a liberação abaixo.
+                        </p>
+                        
+                        <div id="limpeza-lista" style="display: flex; flex-direction: column; gap: 1rem;">
+                            <!-- Lista de mesas aguardando limpeza gerada via JS -->
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+        </div>
+    </main>
+
+    <!-- Modal de Alerta de Alérgenos (Segurança Alimentar) -->
+    <div class="modal-overlay" id="alergenos-modal">
+        <div class="modal">
+            <i class="fa-solid fa-triangle-exclamation" style="font-size: 3rem; color: var(--color-accent); margin-bottom: 1rem;"></i>
+            <h3>ALERTA DE ALÉRGENOS</h3>
+            <p id="alergenos-modal-mensagem">Este pedido possui itens incompatíveis com as restrições alimentares do cliente.</p>
+            <button class="btn-close" id="btn-fechar-modal-alergenos">Entendi e Confirmo Segurança</button>
+        </div>
+    </div>
+
+    <!-- Container de Toasts/Notificações -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script type="module" src="frontend/js/app.js"></script>
+</body>
+</html>
