@@ -1,0 +1,265 @@
+================================================================================
+          APRESENTAÇÃO DO PROJETO - SISTEMA DE GESTÃO SANTINI GOURMET
+================================================================================
+
+Este documento serve de base e roteiro para a apresentação acadêmica do Sistema 
+de Gestão Operacional do Restaurante Santini Gourmet, desenvolvido para a 
+disciplina de Programação Orientada a Objetos (POO).
+
+--------------------------------------------------------------------------------
+1. VISÃO GERAL DO SISTEMA
+--------------------------------------------------------------------------------
+O restaurante Santini Gourmet enfrentava gargalos operacionais críticos decorrentes 
+do uso de comandas físicas de papel e da comunicação puramente verbal entre a 
+equipe de atendimento (garçons), produção (cozinha) e manutenção (limpeza). 
+Os problemas mais frequentes incluíam:
+* Erros na anotação e transcrição de pedidos.
+* Falta de controle de tempo de preparo de pratos (violando metas de SLA).
+* Ineficiência no giro de mesas (mesas limpas demorando a ser ocupadas por 
+  falha de comunicação visual).
+* Riscos de segurança alimentar para clientes com alergias e intolerâncias graves.
+
+A solução proposta centraliza o fluxo operacional em uma plataforma digital integrada,
+operada por quatro principais atores por meio de seus respectivos terminais digitais:
+* GARÇOM: Registra pedidos no cardápio digital, envia restrições alimentares e 
+  recebe notificações imediatas quando os pratos de suas mesas ficam prontos.
+* COZINHA (KDS - Kitchen Display System): Visualiza a fila de pedidos em ordem 
+  cronológica com cronômetro de SLA e destaques visuais em vermelho para 
+  restrições alimentares (ex.: alergia a lactose ou glúten).
+* CAIXA: Realiza a conciliação financeira de forma rápida, permitindo a divisão 
+  da conta entre os clientes e gerando QR Codes de pagamento via Pix.
+* EQUIPE DE LIMPEZA: Realiza o "Check-out de Higienização", que consiste numa 
+  trava física/lógica que impede que uma mesa desocupada volte ao status "Livre" 
+  antes de sua correta higienização física.
+
+O fluxo de funcionamento ("Happy Path") abrange a chegada do cliente, abertura 
+da mesa pelo garçom, envio de pedidos seguros com alérgenos à cozinha, preparo 
+monitorado no KDS, conclusão de preparo com alerta ao garçom, divisão e liquidação 
+financeira no caixa, travamento da mesa para higienização e posterior liberação 
+do status da mesa para "Livre" pela equipe de limpeza.
+
+--------------------------------------------------------------------------------
+2. DIAGRAMA DE CLASSES (UML TEXTUAL)
+--------------------------------------------------------------------------------
+
+Abaixo está o mapeamento detalhado da estrutura de classes do projeto, incluindo 
+seus atributos, métodos e relações:
+
++------------------+
+|    StatusMesa    | <<enum>>
++------------------+
+| - LIVRE          |
+| - OCUPADA        |
+| - AGUARDANDO_... |
++------------------+
+
++------------------+
+|   StatusPedido   | <<enum>>
++------------------+
+| - RECEBIDO       |
+| - EM_PREPARO     |
+| - PRONTO         |
+| - ENTREGUE       |
+| - PAGO           |
++------------------+
+
++-----------------------------------------------------------+
+|                           Mesa                            |
++-----------------------------------------------------------+
+| - numero: int                                             |
+| - capacidade: int                                         |
+| - status: StatusMesa                                      |
++-----------------------------------------------------------+
+| + Mesa(numero: int, capacidade: int)                      |
+| + Mesa(numero: int, capacidade: int, status: StatusMesa)  |
+| + getNumero(): int                                        |
+| + setNumero(numero: int): void                            |
+| + getCapacidade(): int                                    |
+| + setCapacidade(capacidade: int): void                    |
+| + getStatus(): StatusMesa                                 |
+| + setStatus(status: StatusMesa): void                     |
+| + toString(): String                                      |
++-----------------------------------------------------------+
+        * Usa a enumeração StatusMesa
+
++-----------------------------------------------------------+
+|                       ItemCardapio                        |
++-----------------------------------------------------------+
+| - id: int                                                 |
+| - nome: String                                            |
+| - descricao: String                                       |
+| - preco: double                                           |
+| - alergenos: List<String>                                 |
++-----------------------------------------------------------+
+| + ItemCardapio(id: int, nome: String, desc: String,       |
+|                preco: double)                             |
+| + ItemCardapio(id: int, nome: String, desc: String,       |
+|                preco: double, alergenos: List<String>)    |
+| + getId(): int                                            |
+| + getNome(): String                                       |
+| + getDescricao(): String                                  |
+| + getPreco(): double                                      |
+| + getAlergenos(): List<String>                            |
+| + contemAlergeno(alergeno: String): boolean               |
+| + toString(): String                                      |
++-----------------------------------------------------------+
+
++-----------------------------------------------------------+
+|                          Pedido                           |
++-----------------------------------------------------------+
+| - id: int                                                 |
+| - mesa: Mesa                                              |
+| - itens: List<ItemCardapio>                               |
+| - status: StatusPedido                                    |
+| - tempoPreparoMinutos: int                                |
+| - restricoesAlimentares: String                           |
++-----------------------------------------------------------+
+| + Pedido(id: int, mesa: Mesa, tempoPreparoMinutos: int,   |
+|          restricoesAlimentares: String)                   |
+| + getId(): int                                            |
+| + getMesa(): Mesa                                         |
+| + getItens(): List<ItemCardapio>                          |
+| + adicionarItem(item: ItemCardapio): void                 |
+| + getStatus(): StatusPedido                               |
+| + setStatus(status: StatusPedido): void                   |
+| + getTempoPreparoMinutos(): int                           |
+| + getRestricoesAlimentares(): String                      |
+| + calcularTotal(): double                                 |
+| + possuiRestricoesOuAlergenos(): boolean                  |
+| + toString(): String                                      |
++-----------------------------------------------------------+
+        * Associação 1 para 1 com Mesa
+        * Associação 1 para Muitos com ItemCardapio
+        * Usa a enumeração StatusPedido
+
++-----------------------------------------------------------+
+|                       <<interface>>                       |
+|                          MesaDAO                          |
++-----------------------------------------------------------+
+| + salvar(mesa: Mesa): void                                |
+| + buscarPorNumero(numero: int): Mesa                      |
+| + atualizar(mesa: Mesa): void                             |
+| + listarTodas(): List<Mesa>                               |
++-----------------------------------------------------------+
+
++-----------------------------------------------------------+
+|                       MesaDAOSQLite                       |
++-----------------------------------------------------------+
+| - URL_CONEXAO: String                                     |
+| - DRIVER_CLASS: String                                    |
+| - usaBancoReal: boolean                                   |
+| - bancoEmMemoriaFallback: Map<Integer, Mesa>              |
++-----------------------------------------------------------+
+| + MesaDAOSQLite()                                         |
+| - obterConexao(): Connection                              |
+| - criarTabelaSeNaoExistir(): void                         |
+| - inicializarDadosMockFallback(): void                    |
+| + salvar(mesa: Mesa): void                                |
+| + buscarPorNumero(numero: int): Mesa                      |
+| + atualizar(mesa: Mesa): void                             |
+| + listarTodas(): List<Mesa>                               |
++-----------------------------------------------------------+
+        * Realiza/Implementa a interface MesaDAO
+        * Depende de Mesa
+
++-----------------------------------------------------------+
+|                        MesaService                        |
++-----------------------------------------------------------+
+| - mesaDAO: MesaDAO                                        |
++-----------------------------------------------------------+
+| + MesaService(mesaDAO: MesaDAO)                           |
+| + abrirAtendimento(numeroMesa: int): void                 |
+| + fecharContaELiberarParaLimpeza(numeroMesa: int): void   |
+| + confirmarHigienizacao(numeroMesa: int): void            |
+| + buscarMesa(numeroMesa: int): Mesa                       |
+| + listarTodasAsMesas(): List<Mesa>                        |
+| + cadastrarMesa(mesa: Mesa): void                         |
++-----------------------------------------------------------+
+        * Depende da interface MesaDAO (Acoplamento Fraco)
+        * Gerencia regras e estados da entidade Mesa
+
++-----------------------------------------------------------+
+|                      MesaController                       |
++-----------------------------------------------------------+
+| - mesaService: MesaService                                |
++-----------------------------------------------------------+
+| + MesaController(mesaService: MesaService)                |
+| + abrirMesa(numero: int): String                          |
+| + fecharContaELiberarMesa(numero: int): String            |
+| + confirmarLimpezaMesa(numero: int): String               |
+| + obterPainelMesas(): List<Mesa>                          |
++-----------------------------------------------------------+
+        * Intermedeia dados entre a View e a camada MesaService
+
++-----------------------------------------------------------+
+|                         MainView                          |
++-----------------------------------------------------------+
+| + main(args: String[]): void                              |
++-----------------------------------------------------------+
+        * Ponto de entrada que simula o fluxo lógico (Happy Path)
+        * Instancia e integra as demais camadas
+
+-------------------------------------------------------------------------
+3. PROPOSTA DE ORGANIZAÇÃO DO SISTEMA (ARQUITETURA EM CAMADAS / MVC)
+-------------------------------------------------------------------------
+O projeto foi modelado e organizado usando uma Arquitetura Modular em Camadas,
+que atua como uma adaptação estrutural e de baixo acoplamento do padrão MVC
+(Model-View-Controller) voltada para o ambiente corporativo Java.
+
+A divisão é organizada nos seguintes pacotes:
+1. CAMADA DE VISÃO (View - pacote `view`):
+   Responsável pela interface do usuário. Atualmente estruturada na classe 
+   MainView como console CLI e com um painel frontend Web interativo de 
+   demonstração em HTML/CSS/JS. Ela apenas envia ações do usuário e consome 
+   respostas.
+
+2. CAMADA DE CONTROLE (Controller - pacote `controller`):
+   Estruturada pela classe MesaController. Faz a ponte entre a View e a camada 
+   de negócio (Service). Ela recebe as interações brutas da View, valida/trata 
+   dados básicos e captura exceções para responder de forma amigável ao usuário.
+
+3. CAMADA DE SERVIÇO (Service / Lógica de Negócio - pacote `service`):
+   Estruturada pela classe MesaService. É o coração do sistema, onde ficam 
+   armazenadas as regras de negócio cruciais e fluxos coordenados, como a 
+   validação de transições de status de mesas e a validação do "Check-out 
+   de Higienização".
+
+4. CAMADA DE PERSISTÊNCIA (DAO - pacote `dao`):
+   Abstrai o mecanismo físico de banco de dados. Utiliza o padrão DAO, com a 
+   interface MesaDAO e a implementação concreta MesaDAOSQLite, realizando queries 
+   SQL e conexões JDBC de forma isolada das regras de negócio.
+
+5. CAMADA DE MODELO (Model / Entidades de Domínio - pacote `model`):
+   Representa as classes de domínio ricas e entidades puros do negócio (Mesa, 
+   Pedido, ItemCardapio) que contêm dados e encapsulamento de estado local. 
+   Esta camada é visível transversalmente por todas as demais.
+
+-------------------------------------------------------------------------
+4. JUSTIFICATIVA DA DECISÃO DE MODELAGEM
+-------------------------------------------------------------------------
+A adoção da arquitetura modular em camadas orientada a objetos é justificada 
+pelos seguintes benefícios essenciais:
+
+* SEPARAÇÃO DE PREOCUPAÇÕES (Separation of Concerns - SoC):
+  Isola totalmente as preocupações físicas (armazenamento SQL SQLite, renderização 
+  de telas no console) das preocupações lógicas (regras de segurança alimentar 
+  ou de higienização). Isso facilita diagnósticos rápidos e correções pontuais.
+
+* ACOPLAMENTO FRACO E INVERSÃO DE DEPENDÊNCIA (Princípio D do SOLID):
+  A camada de negócio (MesaService) não faz ideia de qual banco de dados está 
+  sendo usado (seja SQLite, PostgreSQL ou um mock temporário na memória). Ela 
+  se comunica puramente com a abstração (interface MesaDAO). Isso confere ao 
+  sistema uma resiliência incrível: se o driver JDBC SQLite falhar, o sistema 
+  ativa um fallback em memória silenciosamente sem quebrar o fluxo.
+
+* SUBSITUTIBILIDADE E ESCALABILIDADE:
+  Permite mudar a interface do usuário (por exemplo, migrando do terminal CLI 
+  ou do mockup estático para uma aplicação JavaFX Desktop ou Web dinâmica) 
+  sem mexer em uma única linha de código da lógica de negócio (Service) 
+  ou da persistência (DAO).
+
+* COESÃO E TESTABILIDADE:
+  Classes menores e focadas são mais legíveis, fáceis de documentar e passíveis 
+  de testes unitários isolados através do uso de mocks.
+
+================================================================================
