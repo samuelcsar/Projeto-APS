@@ -55,4 +55,9 @@ O projeto é estruturado conforme a arquitetura de camadas em Java Standard Edit
 └── DOCUMENTACAO.md    # Relatório detalhado das Etapas 01 e 02 do projeto
 ```
 
+## Diagrama de classes
+
+<img width="648" height="956" alt="image" src="https://github.com/user-attachments/assets/f7158047-773f-4cf4-8164-adb1cbeecba2" />
+
+
 Para mais detalhes sobre as decisões de arquitetura e a análise de requisitos completa, consulte a [Documentação das Etapas 01 e 02](DOCUMENTACAO.md).
