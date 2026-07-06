@@ -40,6 +40,16 @@ Esta modernização reduz drasticamente o tempo de espera do cliente, elimina er
 
 ---
 
+## Padrões de Projeto Aplicados
+
+### Observer
+O padrão de projeto Observer foi incorporado à arquitetura para promover reatividade e baixo acoplamento no gerenciamento de mesas.
+- **Subject:** A classe `MesaService` atua como sujeito, gerenciando o registro de observadores e disparando notificações sempre que uma mesa sofre alteração em seu estado (LIVRE, OCUPADA, AGUARDANDO_LIMPEZA).
+- **Observer:** A interface `MesaObserver` estabelece o contrato para os componentes interessados em monitorar o status das mesas.
+- **Aplicação Prática:** Permite que interfaces gráficas, painéis de monitoramento e terminais de atendimento sejam atualizados de forma automática e instantânea, sem a necessidade de requisições repetitivas ou acoplamento direto com as regras de negócio da mesa.
+
+---
+
 ## Estrutura do Repositório
 
 O projeto é estruturado conforme a arquitetura de camadas em Java Standard Edition (Java SE) puro:
@@ -48,6 +58,7 @@ O projeto é estruturado conforme a arquitetura de camadas em Java Standard Edit
 ├── src/
 │   ├── model/         # Entidades de domínio (Mesa, Pedido, ItemCardapio)
 │   ├── dao/           # Contratos e implementações de persistência (MesaDAO, MesaDAOSQLite)
+│   ├── observer/      # Interfaces e implementação do padrão Observer (MesaObserver)
 │   ├── service/       # Lógica de negócios (MesaService - Check-out de Higienização)
 │   ├── controller/    # Orquestradores de requisições e ações (MesaController)
 │   └── view/          # Ponto de entrada e interface com usuário (MainView)
