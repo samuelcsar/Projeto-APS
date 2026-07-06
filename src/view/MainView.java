@@ -5,6 +5,7 @@ import dao.MesaDAO;
 import dao.MesaDAOSQLite;
 import model.*;
 import service.MesaService;
+import observer.MesaObserver;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,6 +28,15 @@ public class MainView {
         MesaDAO mesaDAO = new MesaDAOSQLite(); // Carrega SQLite ou ativa fallback em memória
         MesaService mesaService = new MesaService(mesaDAO);
         MesaController mesaController = new MesaController(mesaService);
+
+        // Registrando um Observer para demonstrar o Padrão Observer
+        mesaService.adicionarObserver(new MesaObserver() {
+            @Override
+            public void onMesaStatusChanged(Mesa mesa) {
+                System.out.println("\n[OBSERVER NOTIFICADO] O status da mesa " + mesa.getNumero() + " mudou para " + mesa.getStatus());
+            }
+        });
+
         System.out.println("-> Camadas prontas. Instâncias injetadas via Construtor.\n");
 
         // 2. Apresentação do Painel Inicial de Mesas
