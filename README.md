@@ -48,6 +48,13 @@ O padrão de projeto Observer foi incorporado à arquitetura para promover reati
 - **Observer:** A interface `MesaObserver` estabelece o contrato para os componentes interessados em monitorar o status das mesas.
 - **Aplicação Prática:** Permite que interfaces gráficas, painéis de monitoramento e terminais de atendimento sejam atualizados de forma automática e instantânea, sem a necessidade de requisições repetitivas ou acoplamento direto com as regras de negócio da mesa.
 
+### Strategy
+O padrão de projeto Strategy foi implementado para lidar com o fechamento e divisão de contas de forma flexível e escalável.
+- **Context:** A classe `ContaService` atua como o contexto, recebendo a estratégia escolhida pelo usuário.
+- **Strategy:** A interface `EstrategiaDivisaoConta` define o contrato para o cálculo de divisão da conta.
+- **Concrete Strategies:** Implementações como `DivisaoIgualitariaStrategy` e `SemDivisaoStrategy` contêm os algoritmos específicos.
+- **Aplicação Prática:** Permite que o usuário do sistema (garçom ou cliente) escolha diferentes formas de dividir a conta (por pessoa, sem divisão, etc.) no momento do pagamento, sem poluir a classe de serviço com múltiplos `if/else`, respeitando o princípio Open/Closed do SOLID.
+
 ---
 
 ## Estrutura do Repositório
@@ -59,7 +66,8 @@ O projeto é estruturado conforme a arquitetura de camadas em Java Standard Edit
 │   ├── model/         # Entidades de domínio (Mesa, Pedido, ItemCardapio)
 │   ├── dao/           # Contratos e implementações de persistência (MesaDAO, MesaDAOSQLite)
 │   ├── observer/      # Interfaces e implementação do padrão Observer (MesaObserver)
-│   ├── service/       # Lógica de negócios (MesaService - Check-out de Higienização)
+│   ├── strategy/      # Interfaces e implementação do padrão Strategy (EstrategiaDivisaoConta)
+│   ├── service/       # Lógica de negócios (MesaService, ContaService)
 │   ├── controller/    # Orquestradores de requisições e ações (MesaController)
 │   └── view/          # Ponto de entrada e interface com usuário (MainView)
 ├── README.md          # Página inicial de apresentação do repositório
