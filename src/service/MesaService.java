@@ -4,8 +4,9 @@ import dao.MesaDAO;
 import model.Mesa;
 import model.StatusMesa;
 
+import java.util.ArrayList;
 import java.util.List;
-
+import observer.MesaObserver;
 /**
  * Camada de Negócio que gerencia as operações e regras associadas às mesas do restaurante.
  * Aplica os conceitos de acoplamento fraco ao depender estritamente da interface {@link MesaDAO}
@@ -14,6 +15,7 @@ import java.util.List;
 public class MesaService {
 
     private final MesaDAO mesaDAO;
+    private final List<MesaObserver> observers = new ArrayList<>();
 
     /**
      * Construtor que recebe a abstração de persistência (Injeção de Dependência).
@@ -22,6 +24,20 @@ public class MesaService {
      */
     public MesaService(MesaDAO mesaDAO) {
         this.mesaDAO = mesaDAO;
+    }
+
+    public void adicionarObserver(MesaObserver observer) {
+        this.observers.add(observer);
+    }
+
+    public void removerObserver(MesaObserver observer) {
+        this.observers.remove(observer);
+    }
+
+    private void notificarObservers(Mesa mesa) {
+        for (MesaObserver observer : observers) {
+            observer.onMesaStatusChanged(mesa);
+        }
     }
 
     /**
@@ -46,6 +62,7 @@ public class MesaService {
         mesa.setStatus(StatusMesa.OCUPADA);
         mesaDAO.atualizar(mesa);
         System.out.println("[Service Log] Atendimento iniciado na Mesa " + numeroMesa + ".");
+        notificarObservers(mesa);
     }
 
     /**
@@ -69,6 +86,7 @@ public class MesaService {
         mesa.setStatus(StatusMesa.AGUARDANDO_LIMPEZA);
         mesaDAO.atualizar(mesa);
         System.out.println("[Service Log] Pagamento confirmado. Mesa " + numeroMesa + " enviada para Higienização.");
+        notificarObservers(mesa);
     }
 
     /**
@@ -96,6 +114,7 @@ public class MesaService {
         mesaDAO.atualizar(mesa);
         System.out.println("[Service Log] Check-out de Higienização concluído para a Mesa " 
                 + numeroMesa + ". A mesa está agora LIVRE para novos clientes.");
+        notificarObservers(mesa);
     }
 
     /**
