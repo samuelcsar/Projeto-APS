@@ -7,7 +7,7 @@ import java.util.List;
  * Entidade de domínio que representa um Item do Cardápio do restaurante Santini Gourmet.
  * Armazena informações do prato/bebida e sua lista de alérgenos associada para segurança alimentar.
  */
-public class ItemCardapio {
+public class ItemCardapio implements ComponenteCardapio {
     private int id;
     private String nome;
     private String descricao;

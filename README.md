@@ -55,6 +55,26 @@ O padrão de projeto Strategy foi implementado para lidar com o fechamento e div
 - **Concrete Strategies:** Implementações como `DivisaoIgualitariaStrategy` e `SemDivisaoStrategy` contêm os algoritmos específicos.
 - **Aplicação Prática:** Permite que o usuário do sistema (garçom ou cliente) escolha diferentes formas de dividir a conta (por pessoa, sem divisão, etc.) no momento do pagamento, sem poluir a classe de serviço com múltiplos `if/else`, respeitando o princípio Open/Closed do SOLID.
 
+### Adapter
+O padrão de projeto Adapter foi implementado para permitir que nosso sistema se comunique com serviços externos ou bancos de dados com interfaces incompatíveis sem alterar o código principal.
+- **Target:** A interface `MesaDAO`, que define o contrato de persistência esperado pelo sistema.
+- **Adapter:** A classe `MesaDAOCloudAdapter`, que adapta as chamadas do sistema e traduz os dados para a API de nuvem.
+- **Adaptee:** A classe `CloudMesaAPI`, representando uma biblioteca de terceiros ou API remota com interface incompatível.
+- **Aplicação Prática:** Permite a fácil integração com novos sistemas de persistência ou APIs de terceiros (como migrar de um banco local SQLite para um serviço na nuvem), bastando injetar o Adapter correspondente sem causar impactos ou quebras na camada de serviço (`MesaService`).
+
+### Facade
+O padrão de projeto Facade foi implementado para simplificar e unificar as operações complexas relacionadas ao fluxo de atendimento.
+- **Facade:** A classe `AtendimentoFacade`, que atua como ponto único de contato para operações que envolvem múltiplos serviços.
+- **Subsystems:** Serviços como `MesaService` e `ContaService`, que contêm as regras de negócio individuais do restaurante.
+- **Aplicação Prática:** Reduz o acoplamento da camada de controle e visualização com os serviços internos. Quando um cliente finaliza o atendimento, o controlador invoca apenas a Facade, que se encarrega de orquestrar a divisão do valor (via `ContaService`) e a liberação da mesa (via `MesaService`). Isso deixa as requisições mais limpas e evita que o cliente da classe conheça os detalhes internos.
+
+### Composite
+O padrão de projeto Composite foi implementado para estruturar o cardápio, permitindo tratar itens individuais e agrupamentos (combos) de maneira uniforme.
+- **Component:** A interface `ComponenteCardapio`, que estabelece operações comuns como recuperar nome, preço e lista de alérgenos.
+- **Leaf:** A classe `ItemCardapio`, que representa um prato ou bebida simples, sem sub-itens.
+- **Composite:** A classe `ComboCardapio`, que agrupa um conjunto de `ComponenteCardapio` (que podem ser itens ou até mesmo outros combos).
+- **Aplicação Prática:** Permite que o carrinho de `Pedido`, a cozinha e o caixa manipulem pratos individuais e combos promocionais de forma idêntica, eliminando checagens de tipo (`instanceof`). O cálculo total de valores e o mapeamento de restrições alimentares/alérgenos são delegados aos componentes e resolvidos através do polimorfismo, facilitando a expansão do cardápio.
+
 ---
 
 ## Estrutura do Repositório

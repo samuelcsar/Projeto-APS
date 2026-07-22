@@ -11,7 +11,7 @@ import java.util.List;
 public class Pedido {
     private int id;
     private Mesa mesa;
-    private List<ItemCardapio> itens;
+    private List<ComponenteCardapio> itens;
     private StatusPedido status;
     private int tempoPreparoMinutos; // SLA de preparação
     private String restricoesAlimentares; // Observações informadas pelo cliente
@@ -50,11 +50,11 @@ public class Pedido {
         this.mesa = mesa;
     }
 
-    public List<ItemCardapio> getItens() {
+    public List<ComponenteCardapio> getItens() {
         return new ArrayList<>(itens); // Mantém o encapsulamento
     }
 
-    public void adicionarItem(ItemCardapio item) {
+    public void adicionarItem(ComponenteCardapio item) {
         if (item != null) {
             this.itens.add(item);
         }
@@ -91,7 +91,7 @@ public class Pedido {
      */
     public double calcularTotal() {
         double total = 0.0;
-        for (ItemCardapio item : itens) {
+        for (ComponenteCardapio item : itens) {
             total += item.getPreco();
         }
         return total;
@@ -107,7 +107,7 @@ public class Pedido {
         if (!restricoesAlimentares.trim().isEmpty()) {
             return true;
         }
-        for (ItemCardapio item : itens) {
+        for (ComponenteCardapio item : itens) {
             if (!item.getAlergenos().isEmpty()) {
                 return true;
             }

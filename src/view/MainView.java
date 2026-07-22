@@ -68,15 +68,20 @@ public class MainView {
                 "Pudim de leite condensado tradicional com calda de caramelo especial.", 
                 22.00, Arrays.asList("Lactose", "Ovos"));
 
-        System.out.println("Prato Selecionado: " + fettuccine.getNome());
-        System.out.println("-> Alérgenos mapeados: " + fettuccine.getAlergenos());
+        // Aplicando o padrão Composite
+        ComboCardapio comboCasal = new ComboCardapio("Combo Casal Especial", "2 Pratos Principais + 1 Sobremesa com Desconto", 10.00);
+        comboCasal.adicionarItem(fettuccine);
+        comboCasal.adicionarItem(fettuccine);
+        comboCasal.adicionarItem(pudim);
+
+        System.out.println("Item Selecionado: " + comboCasal.getNome());
+        System.out.println("-> Alérgenos mapeados: " + comboCasal.getAlergenos());
 
         // Criando o Pedido
         Mesa mesa1 = mesaService.buscarMesa(1);
         // Garçom informa restrição do cliente na comanda digital
         Pedido pedido1 = new Pedido(5001, mesa1, 20, "Cliente possui intolerância grave a Lactose");
-        pedido1.adicionarItem(fettuccine);
-        pedido1.adicionarItem(pudim);
+        pedido1.adicionarItem(comboCasal); // Adicionando o Combo ao invés de itens separados
 
         System.out.println("\nPedido Gerado: " + pedido1);
         
@@ -84,7 +89,7 @@ public class MainView {
         if (pedido1.possuiRestricoesOuAlergenos()) {
             System.out.println("\n⚠️  [ALERTA DE SEGURANÇA ALIMENTAR PARA O GARÇOM] ⚠️");
             System.out.println("Atenção! Este pedido contém ingredientes potencialmente perigosos:");
-            for (ItemCardapio item : pedido1.getItens()) {
+            for (ComponenteCardapio item : pedido1.getItens()) {
                 System.out.println(" - " + item.getNome() + ": " + item.getAlergenos());
             }
             System.out.println("Restrição Declarada pelo Cliente: \"" + pedido1.getRestricoesAlimentares() + "\"");
@@ -98,7 +103,7 @@ public class MainView {
         System.out.println("PEDIDO ID: " + pedido1.getId() + " | MESA: " + pedido1.getMesa().getNumero());
         System.out.println("SLA - TEMPO DE PREPARO LIMITE: " + pedido1.getTempoPreparoMinutos() + " minutos");
         System.out.println("ITENS A PREPARAR:");
-        for (ItemCardapio item : pedido1.getItens()) {
+        for (ComponenteCardapio item : pedido1.getItens()) {
             System.out.println("  - " + item.getNome());
         }
         // Destaque em Vermelho das Restrições na Cozinha (Simulação visual textual)
