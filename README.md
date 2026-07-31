@@ -98,5 +98,16 @@ O projeto é estruturado conforme a arquitetura de camadas em Java Standard Edit
 
 <img width="648" height="956" alt="image" src="https://github.com/user-attachments/assets/f7158047-773f-4cf4-8164-adb1cbeecba2" />
 
-
 Para mais detalhes sobre as decisões de arquitetura e a análise de requisitos completa, consulte a [Documentação das Etapas 01 e 02](DOCUMENTACAO.md).
+
+---
+
+## Integração e Refinamento (Etapa Final)
+
+Durante a fase de integração e refinamento final, o projeto passou por uma forte refatoração, focada na qualidade do código (Clean Code) e na **ativação simultânea de todos os padrões de projeto** desenvolvidos.
+
+As seguintes melhorias foram implementadas na `MainView` (camada de apresentação e simulação):
+*   **Modularização do Código:** O fluxo principal (`main`) foi quebrado em submétodos focados (`simularFase1`, `simularFase2`, etc.), melhorando drásticamente a legibilidade do código.
+*   **Integração do Padrão Facade e Strategy:** O cálculo bruto da divisão de contas, que antes estava engessado na view, foi removido. Agora a `MainView` utiliza a `AtendimentoFacade` em conjunto com a `DivisaoIgualitariaStrategy`, orquestrando a lógica de negócios da forma correta.
+*   **Integração do Padrão Adapter:** A simulação final foi alterada para injetar o `MesaDAOCloudAdapter` no lugar do banco local, comprovando de forma prática o princípio de baixo acoplamento e flexibilidade proporcionado pelo uso de interfaces de persistência.
+*   **Tratamento de Exceções:** Implementação de blocos `try-catch` em níveis críticos do ciclo de vida da simulação para evitar quebras de sistema e falhas de runtime (stack trace) vazadas para o cliente.
