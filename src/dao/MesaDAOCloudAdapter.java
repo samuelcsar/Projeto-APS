@@ -12,8 +12,18 @@ public class MesaDAOCloudAdapter implements MesaDAO {
 
     private final CloudMesaAPI cloudAPI;
 
-    public MesaDAOCloudAdapter() {
+    // Singleton instance
+    private static MesaDAOCloudAdapter instancia;
+
+    private MesaDAOCloudAdapter() {
         this.cloudAPI = new CloudMesaAPI();
+    }
+
+    public static synchronized MesaDAOCloudAdapter getInstance() {
+        if (instancia == null) {
+            instancia = new MesaDAOCloudAdapter();
+        }
+        return instancia;
     }
 
     @Override

@@ -2,8 +2,6 @@ package view;
 
 import controller.MesaController;
 import dao.MesaDAO;
-import dao.MesaDAOCloudAdapter;
-import dao.MesaDAOSQLite;
 import facade.AtendimentoFacade;
 import facade.ReciboDTO;
 import model.*;
@@ -12,6 +10,8 @@ import service.ContaService;
 import service.MesaService;
 import strategy.DivisaoIgualitariaStrategy;
 import strategy.EstrategiaDivisaoConta;
+import factory.DAOFactory;
+import factory.CardapioFactory;
 
 import java.util.Arrays;
 import java.util.List;
@@ -63,7 +63,7 @@ public class MainView {
         System.out.println("[Passo 1] Inicializando Camadas e Persistência...");
 
         // PADRÃO DAO / PERSISTÊNCIA: Utiliza o SQLite com fallback em memória para inicializar as mesas padrão.
-        MesaDAO mesaDAO = new MesaDAOSQLite(); // Poderia ser facilmente trocado por `new MesaDAOSQLite()`
+        MesaDAO mesaDAO = DAOFactory.getMesaDAO();
 
         mesaService = new MesaService(mesaDAO);
         ContaService contaService = new ContaService();
@@ -106,10 +106,10 @@ public class MainView {
         System.out.println("Fase 2: Registro de Pedido com Segurança de Alérgenos (Composite)");
         System.out.println("-------------------------------------------------------------------------");
 
-        ItemCardapio fettuccine = new ItemCardapio(101, "Fettuccine Alfredo", "Massa ao molho cremoso com camarão", 89.90, Arrays.asList("Lactose", "Crustáceos", "Glúten"));
-        ItemCardapio pudim = new ItemCardapio(202, "Pudim Santini", "Pudim tradicional", 22.00, Arrays.asList("Lactose", "Ovos"));
+        ComponenteCardapio fettuccine = CardapioFactory.criarItem(101, "Fettuccine Alfredo", "Massa ao molho cremoso com camarão", 89.90, Arrays.asList("Lactose", "Crustáceos", "Glúten"));
+        ComponenteCardapio pudim = CardapioFactory.criarItem(202, "Pudim Santini", "Pudim tradicional", 22.00, Arrays.asList("Lactose", "Ovos"));
 
-        ComboCardapio comboCasal = new ComboCardapio("Combo Casal Especial", "2 Pratos + Sobremesa", 10.00);
+        ComboCardapio comboCasal = CardapioFactory.criarCombo("Combo Casal Especial", "2 Pratos + Sobremesa", 10.00);
         comboCasal.adicionarItem(fettuccine);
         comboCasal.adicionarItem(fettuccine);
         comboCasal.adicionarItem(pudim);

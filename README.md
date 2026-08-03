@@ -75,6 +75,16 @@ O padrão de projeto Composite foi implementado para estruturar o cardápio, per
 - **Composite:** A classe `ComboCardapio`, que agrupa um conjunto de `ComponenteCardapio` (que podem ser itens ou até mesmo outros combos).
 - **Aplicação Prática:** Permite que o carrinho de `Pedido`, a cozinha e o caixa manipulem pratos individuais e combos promocionais de forma idêntica, eliminando checagens de tipo (`instanceof`). O cálculo total de valores e o mapeamento de restrições alimentares/alérgenos são delegados aos componentes e resolvidos através do polimorfismo, facilitando a expansão do cardápio.
 
+### Singleton
+O padrão de projeto Singleton foi implementado para garantir instância única em classes de persistência, otimizando recursos e prevenindo anomalias de conexão.
+- **Singleton:** As classes `MesaDAOSQLite` e `MesaDAOCloudAdapter` gerenciam seu próprio acesso estático via `getInstance()`.
+- **Aplicação Prática:** Previne a abertura de múltiplas instâncias de acesso ao arquivo `.db` do SQLite ou múltiplas conexões com a API de nuvem. Evita esgotamento de memória, garantindo que todo o sistema compartilhe o mesmo state de persistência (e o mesmo fallback em memória em caso de falhas).
+
+### Factory Method
+O padrão de projeto Factory Method foi implementado para centralizar e abstrair a criação de objetos complexos ou dependentes de contexto.
+- **Creator (Factories):** Classes `DAOFactory` e `CardapioFactory`.
+- **Aplicação Prática:** A `DAOFactory` isola a decisão de instanciar a versão SQLite ou Cloud do banco, entregando para o sistema apenas o contrato genérico `MesaDAO`. A `CardapioFactory` padroniza a montagem de `ItemCardapio` e `ComboCardapio`, garantindo que os clientes (como a View de simulação) dependam de interfaces em vez das classes concretas do Composite, facilitando mudanças na estrutura dos produtos no futuro.
+
 ---
 
 ## Estrutura do Repositório

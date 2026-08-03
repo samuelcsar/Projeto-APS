@@ -26,12 +26,15 @@ public class MesaDAOSQLite implements MesaDAO {
     // Banco em memória utilizado como fallback para testes rápidos e resiliência
     private static final Map<Integer, Mesa> bancoEmMemoriaFallback = new HashMap<>();
 
+    // Singleton instance
+    private static MesaDAOSQLite instancia;
+
     /**
-     * Construtor da classe.
+     * Construtor privado da classe para garantir o padrão Singleton.
      * Inicializa a estrutura de tabelas do SQLite. Caso falte o driver JDBC do SQLite,
      * ativa automaticamente o modo de simulação em memória.
      */
-    public MesaDAOSQLite() {
+    private MesaDAOSQLite() {
         try {
             Class.forName(DRIVER_CLASS);
             criarTabelaSeNaoExistir();
@@ -41,6 +44,17 @@ public class MesaDAOSQLite implements MesaDAO {
             usaBancoReal = false;
             inicializarDadosMockFallback();
         }
+    }
+
+    /**
+     * Ponto de acesso global à instância Singleton.
+     * @return a instância única de MesaDAOSQLite
+     */
+    public static synchronized MesaDAOSQLite getInstance() {
+        if (instancia == null) {
+            instancia = new MesaDAOSQLite();
+        }
+        return instancia;
     }
 
     /**
