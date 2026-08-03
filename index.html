@@ -111,9 +111,14 @@
 
                 <!-- Aba 3: Caixa -->
                 <div class="tab-content" id="tab-caixa">
-                    <div class="tab-header">
+                    <div class="tab-header" style="flex-wrap: wrap; gap: 1rem;">
                         <h2>Terminal do Caixa</h2>
-                        <span class="mesa-selecionada-info" id="caixa-mesa-info">Nenhuma mesa selecionada</span>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <label for="select-mesa-caixa" style="font-size: 0.9rem; color: var(--color-text-muted);">Selecionar Mesa:</label>
+                            <select id="select-mesa-caixa" style="background: var(--bg-card); color: #fff; border: 1px solid var(--border-color); padding: 0.4rem 0.8rem; border-radius: 6px; font-weight: 600; cursor: pointer;">
+                                <option value="">-- Selecione uma Mesa --</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="caixa-container">

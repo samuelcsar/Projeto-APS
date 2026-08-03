@@ -40,7 +40,7 @@ const btnEnviarPedido = document.getElementById('btn-enviar-pedido');
 const kdsFila = document.getElementById('kds-fila');
 
 // Caixa DOM
-const caixaMesaInfo = document.getElementById('caixa-mesa-info');
+const selectMesaCaixa = document.getElementById('select-mesa-caixa');
 const tabelaConsumoCorpo = document.getElementById('tabela-consumo-corpo');
 const caixaTotalValor = document.getElementById('caixa-total-valor');
 const splitPessoas = document.getElementById('split-pessoas');
@@ -73,6 +73,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     btnEnviarPedido.addEventListener('click', () => {
         validarEEnviarPedido();
+    });
+
+    selectMesaCaixa.addEventListener('change', (e) => {
+        const val = e.target.value;
+        if (val) {
+            selecionarMesa(parseInt(val, 10));
+        } else {
+            mesaSelecionadaId = null;
+            atualizarPainelCaixa();
+        }
     });
 
     splitPessoas.addEventListener('input', calcularSplitConta);
@@ -377,6 +387,19 @@ function atualizarPainelCaixa() {
     caixaTotalValor.textContent = 'R$ 0,00';
     btnGerarPagamento.disabled = true;
     caixaPagamentoArea.style.display = 'none';
+
+    // Atualiza opções do dropdown com todas as mesas
+    const mesas = controller.obterMesas();
+    selectMesaCaixa.innerHTML = '<option value="">-- Selecione uma Mesa --</option>';
+    mesas.forEach(m => {
+        const option = document.createElement('option');
+        option.value = m.numero;
+        option.textContent = `Mesa ${m.numero} (${m.status})`;
+        if (mesaSelecionadaId === m.numero) {
+            option.selected = true;
+        }
+        selectMesaCaixa.appendChild(option);
+    });
 
     if (!mesaSelecionadaId) {
         tabelaConsumoCorpo.innerHTML = `
