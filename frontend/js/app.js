@@ -143,13 +143,17 @@ function renderizarMesas() {
     });
 }
 
-function selecionarMesa(mesa) {
+function selecionarMesa(mesaOuNumero) {
+    const numero = typeof mesaOuNumero === 'object' ? mesaOuNumero.numero : parseInt(mesaOuNumero, 10);
+    const mesa = typeof mesaOuNumero === 'object' ? mesaOuNumero : controller.obterMesas().find(m => m.numero === numero);
+
+    if (!mesa) return;
+
     mesaSelecionadaId = mesa.numero;
     renderizarMesas();
 
     // Atualiza cabeçalhos dos perfis
     garcomMesaInfo.textContent = `Mesa ${mesa.numero} (${mesa.status.replace('_', ' ')})`;
-    caixaMesaInfo.textContent = `Mesa ${mesa.numero} (${mesa.status.replace('_', ' ')})`;
 
     // Reseta form do garçom para novos lançamentos
     itensPedidoCorrente = [];
@@ -284,6 +288,7 @@ function concluirEnvioPedido(teveAlertaConfirmado) {
         restricoesCampo.value = '';
         atualizarComandaGarcom();
         atualizarPainelKDS();
+        atualizarPainelCaixa();
     } else {
         showToast("Erro", res.mensagem, "erro");
     }
@@ -404,33 +409,39 @@ function atualizarPainelCaixa() {
     if (!mesaSelecionadaId) {
         tabelaConsumoCorpo.innerHTML = `
             <tr>
-                <td colspan="2" class="action-box" style="padding: 2rem 0;">Selecione uma mesa ocupada para ver a conta</td>
+                <td colspan="4" class="action-box" style="padding: 2rem 0;">Selecione uma mesa ocupada para ver a conta</td>
             </tr>
         `;
         return;
     }
 
-    const pedido = dao.buscarPedidoPorMesa(mesaSelecionadaId);
-    if (!pedido || pedido.itens.length === 0) {
+    const pedidos = dao.buscarPedidosPorMesa(mesaSelecionadaId);
+    if (!pedidos || pedidos.length === 0) {
         tabelaConsumoCorpo.innerHTML = `
             <tr>
-                <td colspan="2" class="action-box" style="padding: 2rem 0;">Nenhum consumo registrado para a Mesa ${mesaSelecionadaId}</td>
+                <td colspan="4" class="action-box" style="padding: 2rem 0;">Nenhum consumo registrado para a Mesa ${mesaSelecionadaId}</td>
             </tr>
         `;
         return;
     }
 
-    pedido.itens.forEach(item => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${item.nome}</td>
-            <td style="text-align: right;">R$ ${item.preco.toFixed(2)}</td>
-        `;
-        tabelaConsumoCorpo.appendChild(tr);
+    let totalConsumido = 0;
+
+    pedidos.forEach(pedido => {
+        pedido.itens.forEach((item, index) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="font-weight: 600; color: var(--color-primary);">${index === 0 ? `#${pedido.id}` : ''}</td>
+                <td>${item.nome}</td>
+                <td style="text-align: center;"><span class="badge" style="font-size: 0.7rem;">${pedido.status}</span></td>
+                <td style="text-align: right;">R$ ${item.preco.toFixed(2)}</td>
+            `;
+            tabelaConsumoCorpo.appendChild(tr);
+            totalConsumido += item.preco;
+        });
     });
 
-    const total = pedido.itens.reduce((soma, it) => soma + it.preco, 0);
-    caixaTotalValor.textContent = `R$ ${total.toFixed(2)}`;
+    caixaTotalValor.textContent = `R$ ${totalConsumido.toFixed(2)}`;
     btnGerarPagamento.disabled = false;
     
     calcularSplitConta();

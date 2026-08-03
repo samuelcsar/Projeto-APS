@@ -74,6 +74,11 @@ export default class MesaDAO {
         return pedidos.find(p => p.mesa.numero === parseInt(numeroMesa) && p.status !== 'PAGO') || null;
     }
 
+    buscarPedidosPorMesa(numeroMesa) {
+        const pedidos = this.listarTodosPedidos();
+        return pedidos.filter(p => p.mesa.numero === parseInt(numeroMesa) && p.status !== 'PAGO');
+    }
+
     salvarPedido(pedido) {
         const pedidos = this.listarTodosPedidos();
         const index = pedidos.findIndex(p => p.id === pedido.id);

@@ -46,12 +46,12 @@ export default class MesaService {
         mesa.status = StatusMesa.AGUARDANDO_LIMPEZA;
         this.mesaDAO.atualizar(mesa);
 
-        // Atualiza a comanda ativa para o status PAGO
-        const pedido = this.mesaDAO.buscarPedidoPorMesa(numeroMesa);
-        if (pedido) {
+        // Atualiza TODAS as comandas ativas da mesa para o status PAGO
+        const pedidos = this.mesaDAO.buscarPedidosPorMesa(numeroMesa);
+        pedidos.forEach(pedido => {
             pedido.status = 'PAGO';
             this.mesaDAO.atualizarPedido(pedido);
-        }
+        });
     }
 
     /**
