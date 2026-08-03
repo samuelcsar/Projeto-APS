@@ -62,9 +62,8 @@ public class MainView {
     private static void inicializarSistema() {
         System.out.println("[Passo 1] Inicializando Camadas e Persistência...");
 
-        // PADRÃO ADAPTER: Integrado para demonstrar que o sistema pode trocar o SQLite por um sistema Cloud
-        // sem causar quebras nas camadas de Serviço ou Controlador (Baixo Acoplamento).
-        MesaDAO mesaDAO = new MesaDAOCloudAdapter(); // Poderia ser facilmente trocado por `new MesaDAOSQLite()`
+        // PADRÃO DAO / PERSISTÊNCIA: Utiliza o SQLite com fallback em memória para inicializar as mesas padrão.
+        MesaDAO mesaDAO = new MesaDAOSQLite(); // Poderia ser facilmente trocado por `new MesaDAOSQLite()`
 
         mesaService = new MesaService(mesaDAO);
         ContaService contaService = new ContaService();
